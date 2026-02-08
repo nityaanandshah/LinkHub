@@ -64,8 +64,67 @@ services:
       timeout: 10s
       retries: 10
 
+  linkhub-backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: linkhub-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/linkhub
+      SPRING_DATASOURCE_USERNAME: linkhub
+      SPRING_DATASOURCE_PASSWORD: linkhub_secret
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      APP_BASE_URL: http://localhost:8080
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: linkhub-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=15d'
+    depends_on:
+      - linkhub-backend
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: linkhub-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   redis_data:
   zookeeper_data:
   kafka_data:
+  prometheus_data:
+  grafana_data:
