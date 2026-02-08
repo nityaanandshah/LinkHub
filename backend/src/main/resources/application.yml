@@ -41,6 +41,19 @@ spring:
           max-idle: 8
           min-idle: 4
 
+  # Kafka
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: "1"
+      retries: 3
+      properties:
+        spring.json.add.type.headers: false
+        linger.ms: 10
+        batch.size: 16384
+
 # JWT Configuration
 jwt:
   secret: YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!
@@ -55,13 +68,17 @@ keygen:
   redis-refill-threshold: 200
   key-length: 7
 
+# App Configuration
+app:
+  base-url: http://localhost:8080
+
 # Server
 server:
   port: 8080
   servlet:
     context-path: /
 
-# Actuator
+# Actuator & Prometheus
 management:
   endpoints:
     web:
@@ -72,14 +89,20 @@ management:
       show-details: when_authorized
       probes:
         enabled: true
+  metrics:
+    tags:
+      application: linkhub
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 10ms, 25ms, 50ms, 100ms, 250ms, 500ms
 
 # Logging
 logging:
   level:
     com.linkhub: DEBUG
     org.springframework.security: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 # SpringDoc / Swagger
 springdoc:
