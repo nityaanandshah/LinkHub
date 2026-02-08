@@ -1,0 +1,29 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+jwt:
+  secret: TestSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLongForTesting!!
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+
+keygen:
+  pool-size-watermark: 100
+  batch-size: 100
+  redis-buffer-size: 50
+  redis-refill-threshold: 10
+  key-length: 7
+
+app:
+  base-url: http://localhost
+
+logging:
+  level:
+    com.linkhub: DEBUG
