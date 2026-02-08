@@ -41,8 +41,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/api/v1/auth/oauth2/**").permitAll()
 
-                        // Redirect endpoint — public
-                        .requestMatchers(HttpMethod.GET, "/{shortCode:[a-zA-Z0-9]{4,10}}").permitAll()
+                        // Redirect endpoint — public (alphanumeric + hyphens + underscores, 1-10 chars)
+                        .requestMatchers(HttpMethod.GET, "/{shortCode:[a-zA-Z0-9\\-_]{1,10}}").permitAll()
 
                         // Swagger / Actuator
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**").permitAll()
