@@ -92,6 +92,33 @@ services:
       retries: 5
       start_period: 30s
 
+  analytics-consumer:
+    build:
+      context: .
+      dockerfile: analytics-consumer/Dockerfile
+    container_name: linkhub-analytics-consumer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/linkhub
+      SPRING_DATASOURCE_USERNAME: linkhub
+      SPRING_DATASOURCE_PASSWORD: linkhub_secret
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      GEOIP_DATABASE_PATH: /data/geoip/GeoLite2-City.mmdb
+    volumes:
+      - geoip_data:/data/geoip
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
   prometheus:
     image: prom/prometheus:v2.51.0
     container_name: linkhub-prometheus
@@ -128,3 +155,4 @@ volumes:
   kafka_data:
   prometheus_data:
   grafana_data:
+  geoip_data:
