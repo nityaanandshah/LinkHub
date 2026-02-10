@@ -1,5 +1,7 @@
 # === Java / Maven ===
 backend/target/
+analytics-consumer/target/
+backend/logs/
 *.class
 *.jar
 *.war

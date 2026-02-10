@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: linkhub-analytics-consumer
+
+  # PostgreSQL (same database as backend)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/linkhub
+    username: linkhub
+    password: linkhub_secret
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 3
+      connection-timeout: 30000
+      # Batch insert optimization: keep connections warm
+      idle-timeout: 300000
+      max-lifetime: 600000
+      leak-detection-threshold: 60000
+
+  # JPA
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Batch insert tuning
+        jdbc:
+          batch_size: 100
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+
+  # Flyway — disabled for the consumer (migrations managed by backend)
+  flyway:
+    enabled: false
+
+  # Kafka Consumer
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: analytics-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      max-poll-records: 100
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.linkhub.analytics.dto.ClickEventMessage
+        # Consumer tuning
+        max.poll.interval.ms: 300000
+        session.timeout.ms: 30000
+        heartbeat.interval.ms: 10000
+        fetch.min.bytes: 1024
+        fetch.max.wait.ms: 500
+
+# GeoIP Configuration
+geoip:
+  database-path: /data/geoip/GeoLite2-City.mmdb
+
+# Server (different port from backend)
+server:
+  port: 8081
+
+# Actuator & Prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: linkhub-analytics-consumer
+    distribution:
+      percentiles-histogram:
+        analytics.batch.processing.time: true
+        analytics.enrichment.time: true
+      slo:
+        analytics.batch.processing.time: 50ms, 100ms, 250ms, 500ms, 1s, 5s
+        analytics.enrichment.time: 1ms, 5ms, 10ms, 25ms, 50ms
+
+# Logging
+logging:
+  level:
+    com.linkhub: DEBUG
+    org.apache.kafka: WARN
+    org.springframework.jdbc: WARN
