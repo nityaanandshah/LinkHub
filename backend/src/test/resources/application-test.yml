@@ -9,6 +9,15 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client-id
+            client-secret: test-google-client-secret
+            scope: email, profile
+
 jwt:
   secret: TestSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLongForTesting!!
   access-token-expiration: 900000
@@ -23,6 +32,7 @@ keygen:
 
 app:
   base-url: http://localhost
+  frontend-url: http://localhost:5173
 
 logging:
   level:

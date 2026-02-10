@@ -54,6 +54,17 @@ spring:
         linger.ms: 10
         batch.size: 16384
 
+  # OAuth2 (Google)
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope: email, profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
 # JWT Configuration
 jwt:
   secret: YourSuperSecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong!!
@@ -71,6 +82,7 @@ keygen:
 # App Configuration
 app:
   base-url: http://localhost:8080
+  frontend-url: http://localhost:5173
 
 # Server
 server:

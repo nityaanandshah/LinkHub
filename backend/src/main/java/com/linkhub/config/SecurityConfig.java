@@ -1,6 +1,8 @@
 package com.linkhub.config;
 
 import com.linkhub.auth.filter.JwtAuthFilter;
+import com.linkhub.auth.handler.OAuth2SuccessHandler;
+import com.linkhub.auth.service.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,10 +24,17 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, CorsConfigurationSource corsConfigurationSource) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          CorsConfigurationSource corsConfigurationSource,
+                          CustomOAuth2UserService customOAuth2UserService,
+                          OAuth2SuccessHandler oAuth2SuccessHandler) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.corsConfigurationSource = corsConfigurationSource;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.oAuth2SuccessHandler = oAuth2SuccessHandler;
     }
 
     @Bean
@@ -41,6 +50,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                         .requestMatchers("/api/v1/auth/oauth2/**").permitAll()
 
+                        // OAuth2 login flow endpoints
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+
                         // Redirect endpoint — public (alphanumeric + hyphens + underscores, 1-10 chars)
                         .requestMatchers(HttpMethod.GET, "/{shortCode:[a-zA-Z0-9\\-_]{1,10}}").permitAll()
 
@@ -50,6 +62,13 @@ public class SecurityConfig {
 
                         // Everything else requires auth
                         .anyRequest().authenticated()
+                )
+                // OAuth2 Login configuration
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService)
+                        )
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
