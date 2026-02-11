@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: linkhub
+  labels:
+    app.kubernetes.io/name: linkhub
+    app.kubernetes.io/part-of: linkhub

@@ -1,0 +1,59 @@
+# ─── Backend Service ────────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkhub-backend-service
+  namespace: linkhub
+  labels:
+    app: linkhub-backend
+    app.kubernetes.io/name: linkhub
+    app.kubernetes.io/component: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: linkhub-backend
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+---
+# ─── Analytics Consumer Service ─────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkhub-analytics-service
+  namespace: linkhub
+  labels:
+    app: linkhub-analytics-consumer
+    app.kubernetes.io/name: linkhub
+    app.kubernetes.io/component: analytics-consumer
+spec:
+  type: ClusterIP
+  selector:
+    app: linkhub-analytics-consumer
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081
+      protocol: TCP
+---
+# ─── Frontend Service ──────────────────────────────────────
+apiVersion: v1
+kind: Service
+metadata:
+  name: linkhub-frontend-service
+  namespace: linkhub
+  labels:
+    app: linkhub-frontend
+    app.kubernetes.io/name: linkhub
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  selector:
+    app: linkhub-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

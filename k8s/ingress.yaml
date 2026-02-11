@@ -1,0 +1,91 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: linkhub-ingress
+  namespace: linkhub
+  labels:
+    app.kubernetes.io/name: linkhub
+  annotations:
+    # NGINX Ingress Controller
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+
+    # Rate limiting at ingress level
+    nginx.ingress.kubernetes.io/limit-rps: "50"
+    nginx.ingress.kubernetes.io/limit-burst-multiplier: "5"
+
+    # cert-manager for automatic TLS certificates
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - lnk.hub
+      secretName: linkhub-tls-secret
+  rules:
+    - host: lnk.hub
+      http:
+        paths:
+          # API routes → backend
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          # OAuth2 routes → backend
+          - path: /oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          - path: /login/oauth2
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          # Actuator / health → backend
+          - path: /actuator
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          # Swagger → backend
+          - path: /swagger-ui
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          - path: /api-docs
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-backend-service
+                port:
+                  number: 8080
+
+          # Everything else → frontend (SPA handles client-side routing)
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: linkhub-frontend-service
+                port:
+                  number: 80
