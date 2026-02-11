@@ -1,5 +1,6 @@
 package com.linkhub.ratelimit;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -14,8 +15,8 @@ import java.util.Collections;
  *
  * <p>Key pattern: {@code rate:{type}:{identifier}} where type is "ip" or "user".
  *
- * <p>When Redis is unavailable, degrades to permissive mode (allow all)
- * to avoid blocking traffic.
+ * <p>When Redis is unavailable, the Resilience4j circuit breaker opens
+ * and the service degrades to permissive mode (allow all) to avoid blocking traffic.
  */
 @Service
 public class RateLimitService {
@@ -51,26 +52,32 @@ public class RateLimitService {
 
     /**
      * Check if a request is allowed under the rate limit.
+     * Falls back to permissive mode if Redis is down (circuit breaker open).
      *
      * @param key    the rate limit key (e.g., "rate:ip:192.168.1.1")
      * @param limit  maximum number of requests allowed
      * @param windowSeconds  time window in seconds
      * @return true if the request is allowed, false if rate limited
      */
+    @CircuitBreaker(name = "redisRateLimit", fallbackMethod = "isAllowedFallback")
     public boolean isAllowed(String key, int limit, int windowSeconds) {
-        try {
-            Long result = redisTemplate.execute(
-                    rateLimitRedisScript,
-                    Collections.singletonList(key),
-                    String.valueOf(limit),
-                    String.valueOf(windowSeconds)
-            );
-            return result != null && result == 1L;
-        } catch (Exception e) {
-            log.warn("Redis unavailable for rate limiting, degrading to permissive mode: {}", e.getMessage());
-            // Graceful degradation: allow request when Redis is down
-            return true;
-        }
+        Long result = redisTemplate.execute(
+                rateLimitRedisScript,
+                Collections.singletonList(key),
+                String.valueOf(limit),
+                String.valueOf(windowSeconds)
+        );
+        return result != null && result == 1L;
+    }
+
+    /**
+     * Fallback: allow all requests when Redis / circuit breaker is down.
+     * This prevents rate limiting from blocking traffic during Redis outages.
+     */
+    @SuppressWarnings("unused")
+    private boolean isAllowedFallback(String key, int limit, int windowSeconds, Throwable t) {
+        log.warn("Rate limiter circuit breaker OPEN — permissive mode for key={}: {}", key, t.getMessage());
+        return true;
     }
 
     /**

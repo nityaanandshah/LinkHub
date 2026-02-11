@@ -31,5 +31,6 @@
         <zxing.version>3.5.3</zxing.version>
         <ua-parser.version>1.6.1</ua-parser.version>
         <maxmind.version>4.2.0</maxmind.version>
+        <resilience4j.version>2.2.0</resilience4j.version>
     </properties>
 </project>

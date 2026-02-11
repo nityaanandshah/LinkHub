@@ -110,6 +110,39 @@ management:
       slo:
         http.server.requests: 10ms, 25ms, 50ms, 100ms, 250ms, 500ms
 
+# ─── Resilience4j Circuit Breaker ───
+resilience4j:
+  circuitbreaker:
+    instances:
+      redisCache:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - org.springframework.data.redis.RedisConnectionFailureException
+          - org.springframework.data.redis.RedisSystemException
+          - io.lettuce.core.RedisException
+          - io.lettuce.core.RedisConnectionException
+      redisRateLimit:
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - org.springframework.data.redis.RedisConnectionFailureException
+          - org.springframework.data.redis.RedisSystemException
+          - io.lettuce.core.RedisException
+          - io.lettuce.core.RedisConnectionException
+
 # Logging
 logging:
   level:
