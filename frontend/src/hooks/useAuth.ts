@@ -1,21 +1,7 @@
 import { useState, useCallback, useContext, createContext, ReactNode, useMemo } from 'react';
 import React from 'react';
 import apiClient from '../api/client';
-
-interface UserInfo {
-  id: number;
-  email: string;
-  displayName: string;
-  role: string;
-}
-
-interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  expiresIn: number;
-  user: UserInfo;
-}
+import type { UserInfo, AuthResponse } from '../types/api';
 
 interface AuthContextType {
   user: UserInfo | null;
@@ -23,6 +9,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<AuthResponse>;
   register: (email: string, password: string, displayName?: string) => Promise<AuthResponse>;
   logout: () => Promise<void>;
+  handleOAuthCallback: (accessToken: string, refreshToken: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -80,9 +67,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const handleOAuthCallback = useCallback((accessToken: string, refreshToken: string) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    setToken(accessToken);
+
+    // Decode basic user info from JWT payload (sub = userId)
+    try {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const userInfo: UserInfo = {
+        id: payload.sub ? parseInt(payload.sub) : 0,
+        email: payload.email || '',
+        displayName: payload.displayName || payload.email || '',
+        role: payload.role || 'USER',
+      };
+      localStorage.setItem('user', JSON.stringify(userInfo));
+      setUser(userInfo);
+    } catch {
+      // If JWT decode fails, just store the token — user info will be fetched later
+    }
+  }, []);
+
   const value = useMemo(
-    () => ({ user, isAuthenticated, login, register, logout }),
-    [user, isAuthenticated, login, register, logout]
+    () => ({ user, isAuthenticated, login, register, logout, handleOAuthCallback }),
+    [user, isAuthenticated, login, register, logout, handleOAuthCallback]
   );
 
   return React.createElement(AuthContext.Provider, { value }, children);
