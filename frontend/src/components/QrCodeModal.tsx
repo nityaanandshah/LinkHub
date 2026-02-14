@@ -9,6 +9,13 @@ interface Props {
   shortUrl: string;
 }
 
+const S = {
+  primary: '#2563EB',
+  primaryHover: '#1D4ED8',
+  textMuted: '#94A3B8',
+  btnShadow: '0px 2px 4px rgba(0,0,0,0.08)',
+} as const;
+
 export default function QrCodeModal({ open, onClose, shortCode, shortUrl }: Props) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,24 +42,69 @@ export default function QrCodeModal({ open, onClose, shortCode, shortUrl }: Prop
   };
 
   return (
-    <Modal open={open} onClose={onClose} title="QR Code" maxWidth="max-w-sm">
-      <div className="flex flex-col items-center gap-4">
+    <Modal open={open} onClose={onClose} title="QR Code" maxWidth="380px">
+      <div className="flex flex-col items-center" style={{ gap: '20px' }}>
         {loading ? (
-          <div className="w-48 h-48 bg-gray-100 rounded-lg animate-pulse" />
+          <div
+            style={{
+              width: '192px',
+              height: '192px',
+              backgroundColor: '#F1F5F9',
+              borderRadius: '8px',
+            }}
+            className="animate-pulse"
+          />
         ) : qrDataUrl ? (
-          <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 rounded-lg border border-gray-200" />
+          <img
+            src={qrDataUrl}
+            alt="QR Code"
+            style={{
+              width: '192px',
+              height: '192px',
+              borderRadius: '8px',
+              border: '1px solid #E2E8F0',
+            }}
+          />
         ) : (
-          <div className="w-48 h-48 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-sm">
+          <div
+            style={{
+              width: '192px',
+              height: '192px',
+              backgroundColor: '#F1F5F9',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: S.textMuted,
+              fontSize: '0.875rem',
+            }}
+          >
             Failed to load
           </div>
         )}
 
-        <p className="text-sm text-gray-500 text-center break-all">{shortUrl}</p>
+        <p style={{ fontSize: '0.875rem', color: S.textMuted, textAlign: 'center', wordBreak: 'break-all' }}>
+          {shortUrl}
+        </p>
 
         <button
           onClick={handleDownload}
           disabled={!qrDataUrl}
-          className="w-full py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 rounded-lg transition-colors"
+          className="transition-colors"
+          style={{
+            width: '100%',
+            padding: '12px',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            color: '#FFFFFF',
+            backgroundColor: !qrDataUrl ? '#93c5fd' : S.primary,
+            border: 'none',
+            borderRadius: '10px',
+            cursor: !qrDataUrl ? 'not-allowed' : 'pointer',
+            boxShadow: S.btnShadow,
+          }}
+          onMouseEnter={(e) => { if (qrDataUrl) e.currentTarget.style.backgroundColor = S.primaryHover; }}
+          onMouseLeave={(e) => { if (qrDataUrl) e.currentTarget.style.backgroundColor = S.primary; }}
         >
           Download PNG
         </button>

@@ -8,8 +8,18 @@ import QrCodeModal from '../components/QrCodeModal';
 import { useUrls } from '../hooks/useUrls';
 import type { UrlItem } from '../types/api';
 
+const S = {
+  cardShadow: '0px 1px 2px rgba(0,0,0,0.05), 0px 4px 8px rgba(0,0,0,0.04)',
+  btnShadow: '0px 2px 4px rgba(0,0,0,0.08)',
+  border: '#E2E8F0',
+  accent: '#F97316',
+  accentHover: '#EA580C',
+  textPrimary: '#0F172A',
+  textMuted: '#94A3B8',
+} as const;
+
 export default function Dashboard() {
-  const { urls, loading, totalPages, totalElements, currentPage, fetchUrls, createUrl, deleteUrl, toggleUrl } =
+  const { urls, loading, totalPages, currentPage, fetchUrls, createUrl, deleteUrl, toggleUrl } =
     useUrls();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [qrTarget, setQrTarget] = useState<UrlItem | null>(null);
@@ -28,27 +38,50 @@ export default function Dashboard() {
       <Toaster position="top-right" />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">My URLs</h1>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: S.textPrimary, margin: 0 }}>
+          My URLs
+        </h1>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
+          className="inline-flex items-center gap-2.5 transition-colors"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: S.accent,
+            color: '#FFFFFF',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            borderRadius: '10px',
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: S.btnShadow,
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = S.accentHover; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = S.accent; }}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
           </svg>
           Create URL
         </button>
       </div>
 
       {/* URL Table */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+      <div
+        style={{
+          backgroundColor: '#FFFFFF',
+          borderRadius: '12px',
+          border: `1px solid ${S.border}`,
+          boxShadow: S.cardShadow,
+        }}
+      >
         {loading && urls.length === 0 ? (
-          <div className="py-16 text-center text-gray-400">
-            <div className="inline-block w-6 h-6 border-2 border-primary-300 border-t-primary-600 rounded-full animate-spin" />
-            <p className="mt-3 text-sm">Loading URLs...</p>
+          <div className="py-20 text-center" style={{ color: S.textMuted }}>
+            <div
+              className="inline-block w-6 h-6 rounded-full animate-spin"
+              style={{ border: '2px solid #DBEAFE', borderTopColor: '#2563EB' }}
+            />
+            <p className="mt-4 text-sm">Loading URLs...</p>
           </div>
         ) : (
           <UrlTable
@@ -64,21 +97,43 @@ export default function Dashboard() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
+        <div className="flex items-center justify-center gap-3 mt-8">
           <button
             onClick={() => fetchUrls(currentPage - 1)}
             disabled={currentPage === 0}
-            className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              padding: '8px 16px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              color: '#475569',
+              backgroundColor: '#FFFFFF',
+              border: `1px solid ${S.border}`,
+              borderRadius: '10px',
+              cursor: currentPage === 0 ? 'not-allowed' : 'pointer',
+              boxShadow: S.btnShadow,
+            }}
           >
             Previous
           </button>
-          <span className="text-sm text-gray-500">
+          <span style={{ fontSize: '0.875rem', color: S.textMuted, padding: '0 8px' }}>
             Page {currentPage + 1} of {totalPages}
           </span>
           <button
             onClick={() => fetchUrls(currentPage + 1)}
             disabled={currentPage >= totalPages - 1}
-            className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              padding: '8px 16px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              color: '#475569',
+              backgroundColor: '#FFFFFF',
+              border: `1px solid ${S.border}`,
+              borderRadius: '10px',
+              cursor: currentPage >= totalPages - 1 ? 'not-allowed' : 'pointer',
+              boxShadow: S.btnShadow,
+            }}
           >
             Next
           </button>

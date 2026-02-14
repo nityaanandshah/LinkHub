@@ -10,6 +10,16 @@ interface Props {
   onSuccess: () => void;
 }
 
+const S = {
+  primary: '#2563EB',
+  primaryHover: '#1D4ED8',
+  primaryLight: '#DBEAFE',
+  border: '#E2E8F0',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  btnShadow: '0px 2px 4px rgba(0,0,0,0.08)',
+} as const;
+
 export default function CreateUrlModal({ open, onClose, onCreate, onSuccess }: Props) {
   const [longUrl, setLongUrl] = useState('');
   const [customAlias, setCustomAlias] = useState('');
@@ -41,12 +51,34 @@ export default function CreateUrlModal({ open, onClose, onCreate, onSuccess }: P
     }
   };
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 16px',
+    border: `1px solid ${S.border}`,
+    borderRadius: '8px',
+    fontSize: '0.875rem',
+    color: '#0F172A',
+    backgroundColor: '#FFFFFF',
+    outline: 'none',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
+  };
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = S.primary;
+    e.target.style.boxShadow = `0 0 0 3px ${S.primaryLight}`;
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.style.borderColor = S.border;
+    e.target.style.boxShadow = 'none';
+  };
+
   return (
     <Modal open={open} onClose={onClose} title="Create Short URL">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Long URL <span className="text-danger-500">*</span>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: S.textSecondary, marginBottom: '6px' }}>
+            Long URL <span style={{ color: '#EF4444' }}>*</span>
           </label>
           <input
             type="url"
@@ -54,13 +86,15 @@ export default function CreateUrlModal({ open, onClose, onCreate, onSuccess }: P
             onChange={(e) => setLongUrl(e.target.value)}
             required
             placeholder="https://example.com/very/long/path"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            style={inputStyle}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Custom Alias <span className="text-gray-400">(optional)</span>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: S.textSecondary, marginBottom: '6px' }}>
+            Custom Alias <span style={{ color: S.textMuted }}>(optional)</span>
           </label>
           <input
             type="text"
@@ -69,35 +103,66 @@ export default function CreateUrlModal({ open, onClose, onCreate, onSuccess }: P
             placeholder="my-brand"
             pattern="^[a-zA-Z0-9\-_]{4,10}$"
             title="4–10 alphanumeric characters, hyphens, underscores"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            style={inputStyle}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
-          <p className="mt-1 text-xs text-gray-400">4–10 chars: letters, numbers, hyphens, underscores</p>
+          <p style={{ marginTop: '6px', fontSize: '0.75rem', color: S.textMuted }}>
+            4–10 chars: letters, numbers, hyphens, underscores
+          </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Expires At <span className="text-gray-400">(optional)</span>
+          <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: S.textSecondary, marginBottom: '6px' }}>
+            Expires At <span style={{ color: S.textMuted }}>(optional)</span>
           </label>
           <input
             type="datetime-local"
             value={expiresAt}
             onChange={(e) => setExpiresAt(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            style={inputStyle}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-2">
+        <div className="flex justify-end gap-3" style={{ paddingTop: '8px' }}>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="transition-colors"
+            style={{
+              padding: '8px 20px',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              color: S.textSecondary,
+              backgroundColor: '#F1F5F9',
+              border: 'none',
+              borderRadius: '10px',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#E2E8F0'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F1F5F9'; }}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300 rounded-lg transition-colors"
+            className="transition-colors"
+            style={{
+              padding: '8px 20px',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              color: '#FFFFFF',
+              backgroundColor: loading ? '#93c5fd' : S.primary,
+              border: 'none',
+              borderRadius: '10px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: S.btnShadow,
+            }}
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.backgroundColor = S.primaryHover; }}
+            onMouseLeave={(e) => { if (!loading) e.currentTarget.style.backgroundColor = S.primary; }}
           >
             {loading ? 'Creating...' : 'Create URL'}
           </button>

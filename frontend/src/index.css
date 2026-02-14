@@ -1,29 +1,79 @@
 @import "tailwindcss";
 
 @theme {
+  /* ── Primary (Professional Blue) ── */
   --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
   --color-primary-300: #93c5fd;
   --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
+  --color-primary-500: #2563eb;
   --color-primary-600: #2563eb;
   --color-primary-700: #1d4ed8;
   --color-primary-800: #1e40af;
   --color-primary-900: #1e3a8a;
-  --color-danger-50: #fef2f2;
+
+  /* ── Accent (Modern Orange — use sparingly) ── */
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #fed7aa;
+  --color-accent-200: #fdba74;
+  --color-accent-300: #fb923c;
+  --color-accent-400: #f97316;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+
+  /* ── Semantic: Error ── */
+  --color-danger-50: #fee2e2;
+  --color-danger-100: #fee2e2;
   --color-danger-500: #ef4444;
-  --color-danger-600: #dc2626;
-  --color-success-50: #f0fdf4;
-  --color-success-500: #22c55e;
-  --color-success-600: #16a34a;
-  --color-warning-50: #fffbeb;
+  --color-danger-600: #ef4444;
+
+  /* ── Semantic: Success ── */
+  --color-success-50: #d1fae5;
+  --color-success-100: #d1fae5;
+  --color-success-500: #10b981;
+  --color-success-600: #10b981;
+
+  /* ── Semantic: Warning ── */
+  --color-warning-50: #fef3c7;
+  --color-warning-100: #fef3c7;
   --color-warning-500: #f59e0b;
+  --color-warning-600: #f59e0b;
+
+  /* ── Fonts ── */
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-body: 'Source Sans 3', 'Gill Sans', 'Segoe UI', Tahoma, Geneva, sans-serif;
 }
 
+/* ── Base ── */
 body {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #f8fafc;
-  color: #1e293b;
+  font-family: var(--font-body);
+  font-weight: 400;
+  background-color: #F8FAFC;
+  color: #0F172A;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: #0F172A;
+}
+
+/* ── Subtle card shadow (per design palette) ── */
+.shadow-card {
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.05), 0px 4px 8px rgba(0,0,0,0.04);
+}
+
+/* ── Button shadow ── */
+.shadow-btn {
+  box-shadow: 0px 2px 4px rgba(0,0,0,0.08);
+}
+
+/* ── Tooltip / elevated shadow ── */
+.shadow-elevated {
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.08), 0px 1px 3px rgba(0,0,0,0.06);
 }

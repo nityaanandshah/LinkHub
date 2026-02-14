@@ -1,7 +1,22 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import type { DeviceStats } from '../../types/api';
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#6366f1', '#ec4899', '#14b8a6'];
+/* ── Fixed 5-color chart palette ── */
+const CHART_COLORS = ['#2563EB', '#F97316', '#10B981', '#8B5CF6', '#06B6D4'];
+
+/* ── Per-section color offsets so each donut looks distinct ── */
+const DEVICE_COLORS  = [CHART_COLORS[0], CHART_COLORS[3], CHART_COLORS[4], CHART_COLORS[1], CHART_COLORS[2]]; // blue first
+const BROWSER_COLORS = [CHART_COLORS[1], CHART_COLORS[0], CHART_COLORS[3], CHART_COLORS[4], CHART_COLORS[2]]; // orange first
+const OS_COLORS      = [CHART_COLORS[2], CHART_COLORS[0], CHART_COLORS[1], CHART_COLORS[3], CHART_COLORS[4]]; // green first
+
+const tooltipStyle: React.CSSProperties = {
+  borderRadius: 8,
+  border: '1px solid #E2E8F0',
+  boxShadow: '0px 4px 12px rgba(0,0,0,0.08), 0px 1px 3px rgba(0,0,0,0.06)',
+  fontSize: 12,
+  fontFamily: 'Source Sans 3, sans-serif',
+  padding: '8px 12px',
+};
 
 interface Props {
   data: DeviceStats | null;
@@ -9,32 +24,32 @@ interface Props {
 
 export default function DeviceCharts({ data }: Props) {
   if (!data) {
-    return <p className="text-center text-gray-400 py-8 text-sm">No device data</p>;
+    return <p style={{ textAlign: 'center', color: '#94A3B8', padding: '40px 0', fontSize: '0.875rem' }}>No device data</p>;
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <ChartSection title="Device Types" items={data.deviceTypes} />
-      <ChartSection title="Browsers" items={data.browsers} />
-      <ChartSection title="Operating Systems" items={data.operatingSystems} />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <ChartSection title="Device Types" items={data.deviceTypes} colors={DEVICE_COLORS} />
+      <ChartSection title="Browsers" items={data.browsers} colors={BROWSER_COLORS} />
+      <ChartSection title="Operating Systems" items={data.operatingSystems} colors={OS_COLORS} />
     </div>
   );
 }
 
-function ChartSection({ title, items }: { title: string; items: { name: string; clicks: number; percentage: number }[] }) {
+function ChartSection({ title, items, colors }: { title: string; items: { name: string; clicks: number; percentage: number }[]; colors: string[] }) {
   if (items.length === 0) {
     return (
       <div>
-        <h3 className="text-sm font-medium text-gray-600 mb-2">{title}</h3>
-        <p className="text-xs text-gray-400">No data</p>
+        <h3 style={{ fontSize: '0.875rem', fontWeight: 500, color: '#475569', marginBottom: '12px', fontFamily: 'var(--font-body)' }}>{title}</h3>
+        <p style={{ fontSize: '0.75rem', color: '#94A3B8' }}>No data</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h3 className="text-sm font-medium text-gray-600 mb-3">{title}</h3>
-      <div className="flex items-center gap-4">
+      <h3 style={{ fontSize: '0.875rem', fontWeight: 500, color: '#475569', marginBottom: '14px', fontFamily: 'var(--font-body)' }}>{title}</h3>
+      <div className="flex items-center gap-5">
         <ResponsiveContainer width={140} height={140}>
           <PieChart>
             <Pie
@@ -48,26 +63,28 @@ function ChartSection({ title, items }: { title: string; items: { name: string; 
               strokeWidth={2}
             >
               {items.map((_entry, index) => (
-                <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                <Cell key={index} fill={colors[index % colors.length]} />
               ))}
             </Pie>
-            <Tooltip
-              contentStyle={{ borderRadius: 8, border: '1px solid #e2e8f0', fontSize: 12 }}
-              formatter={(value: number) => [`${value} clicks`]}
-            />
+            <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => [`${value} clicks`]} />
           </PieChart>
         </ResponsiveContainer>
-        <div className="flex-1 space-y-1.5">
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {items.slice(0, 5).map((item, i) => (
-            <div key={item.name} className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
+            <div key={item.name} className="flex items-center justify-between" style={{ fontSize: '0.75rem' }}>
+              <div className="flex items-center" style={{ gap: '8px' }}>
                 <span
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '50%',
+                    backgroundColor: colors[i % colors.length],
+                    display: 'inline-block',
+                  }}
                 />
-                <span className="text-gray-700">{item.name || 'Unknown'}</span>
+                <span style={{ color: '#0F172A' }}>{item.name || 'Unknown'}</span>
               </div>
-              <span className="text-gray-500">{item.percentage.toFixed(1)}%</span>
+              <span style={{ color: '#94A3B8' }}>{item.percentage.toFixed(1)}%</span>
             </div>
           ))}
         </div>

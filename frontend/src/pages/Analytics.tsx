@@ -15,6 +15,21 @@ const TIME_RANGES = [
   { label: 'All', days: undefined },
 ];
 
+const S = {
+  cardShadow: '0px 1px 2px rgba(0,0,0,0.05), 0px 4px 8px rgba(0,0,0,0.04)',
+  border: '#E2E8F0',
+  primary: '#2563EB',
+  primaryHover: '#1D4ED8',
+  accent: '#F97316',
+  textPrimary: '#0F172A',
+  textSecondary: '#475569',
+  textMuted: '#94A3B8',
+  warningBg: '#FEF3C7',
+  warningText: '#92400E',
+  errorBg: '#FEE2E2',
+  errorText: '#EF4444',
+} as const;
+
 export default function Analytics() {
   const { shortCode } = useParams<{ shortCode: string }>();
   const { summary, timeseries, referrers, devices, geo, loading, error, fetchAll } =
@@ -31,35 +46,61 @@ export default function Analytics() {
   return (
     <AppLayout>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+        <div className="flex items-center gap-4">
           <Link
             to="/dashboard"
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="transition-colors"
+            style={{
+              padding: '8px',
+              color: S.textMuted,
+              borderRadius: '8px',
+              display: 'inline-flex',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = S.textSecondary; e.currentTarget.style.backgroundColor = '#F1F5F9'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = S.textMuted; e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
             </svg>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              <span className="font-mono text-primary-600">{shortCode}</span>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: S.textPrimary, margin: 0 }}>
+              Analytics
+            </h1>
+            <p style={{ fontSize: '0.875rem', color: S.textMuted, marginTop: '4px' }}>
+              <span style={{ fontFamily: 'monospace', color: S.primary }}>{shortCode}</span>
             </p>
           </div>
         </div>
 
         {/* Time range selector */}
-        <div className="flex items-center bg-white border border-gray-200 rounded-lg p-0.5">
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '10px',
+            border: `1px solid ${S.border}`,
+            padding: '3px',
+            boxShadow: S.cardShadow,
+          }}
+        >
           {TIME_RANGES.map(({ label, days }) => (
             <button
               key={label}
               onClick={() => setSelectedRange(days)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                selectedRange === days
-                  ? 'bg-primary-600 text-white'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
+              style={{
+                padding: '6px 16px',
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                backgroundColor: selectedRange === days ? S.primary : 'transparent',
+                color: selectedRange === days ? '#FFFFFF' : S.textMuted,
+              }}
             >
               {label}
             </button>
@@ -69,68 +110,110 @@ export default function Analytics() {
 
       {/* Analytics lag warning */}
       {lagInfo?.delayed && (
-        <div className="mb-6 p-4 bg-warning-50 border border-amber-200 text-amber-700 rounded-lg text-sm flex items-center gap-2">
-          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        <div
+          style={{
+            marginBottom: '28px',
+            padding: '14px 18px',
+            backgroundColor: S.warningBg,
+            borderRadius: '8px',
+            fontSize: '0.875rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            color: S.warningText,
+            border: `1px solid #FDE68A`,
+          }}
+        >
+          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
           </svg>
           {lagInfo.message}
         </div>
       )}
 
       {error && (
-        <div className="mb-6 p-4 bg-danger-50 border border-red-200 text-danger-600 rounded-lg text-sm">
+        <div
+          style={{
+            marginBottom: '28px',
+            padding: '14px 18px',
+            backgroundColor: S.errorBg,
+            color: S.errorText,
+            borderRadius: '8px',
+            fontSize: '0.875rem',
+            border: `1px solid ${S.errorText}33`,
+          }}
+        >
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="py-20 text-center">
-          <div className="inline-block w-8 h-8 border-2 border-primary-300 border-t-primary-600 rounded-full animate-spin" />
-          <p className="mt-3 text-gray-400">Loading analytics...</p>
+        <div className="py-24 text-center">
+          <div
+            className="inline-block w-8 h-8 rounded-full animate-spin"
+            style={{ border: '2px solid #DBEAFE', borderTopColor: '#2563EB' }}
+          />
+          <p style={{ marginTop: '16px', color: S.textMuted }}>Loading analytics...</p>
         </div>
       ) : (
         <>
           {/* Summary cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <p className="text-sm font-medium text-gray-500 mb-1">Total Clicks</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {summary?.totalClicks.toLocaleString() ?? '—'}
-              </p>
-            </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <p className="text-sm font-medium text-gray-500 mb-1">Unique Visitors</p>
-              <p className="text-3xl font-bold text-gray-900">
-                {summary?.uniqueVisitors.toLocaleString() ?? '—'}
-              </p>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+            <SummaryCard label="Total Clicks" value={summary?.totalClicks.toLocaleString() ?? '—'} />
+            <SummaryCard label="Unique Visitors" value={summary?.uniqueVisitors.toLocaleString() ?? '—'} />
           </div>
 
           {/* Two-column: Timeseries + Referrers */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Clicks Over Time</h2>
-              <ClickChart data={timeseries} />
-            </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Referrers</h2>
-              <ReferrerChart data={referrers} />
-            </div>
+            <Card title="Clicks Over Time"><ClickChart data={timeseries} /></Card>
+            <Card title="Top Referrers"><ReferrerChart data={referrers} /></Card>
           </div>
 
-          {/* Device Breakdown — full width, horizontal layout */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Device Breakdown</h2>
-            <DeviceCharts data={devices} />
+          {/* Device Breakdown */}
+          <div className="mb-6">
+            <Card title="Device Breakdown"><DeviceCharts data={devices} /></Card>
           </div>
 
           {/* Geo */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Geographic Breakdown</h2>
-            <GeoTable data={geo} />
-          </div>
+          <Card title="Geographic Breakdown"><GeoTable data={geo} /></Card>
         </>
       )}
     </AppLayout>
+  );
+}
+
+/* ── Reusable summary card ── */
+function SummaryCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        border: `1px solid ${S.border}`,
+        boxShadow: S.cardShadow,
+        padding: '28px',
+      }}
+    >
+      <p style={{ fontSize: '0.875rem', fontWeight: 500, color: S.textSecondary, marginBottom: '8px' }}>{label}</p>
+      <p style={{ fontSize: '2rem', fontWeight: 700, color: S.textPrimary, margin: 0 }}>{value}</p>
+    </div>
+  );
+}
+
+/* ── Reusable card wrapper ── */
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderRadius: '12px',
+        border: `1px solid ${S.border}`,
+        boxShadow: S.cardShadow,
+        padding: '28px',
+      }}
+    >
+      <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: S.textPrimary, marginBottom: '20px' }}>{title}</h2>
+      {children}
+    </div>
   );
 }

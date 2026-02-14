@@ -10,13 +10,25 @@ import {
 import { format, parseISO } from 'date-fns';
 import type { TimeseriesPoint } from '../../types/api';
 
+/* ── Palette ── */
+const CHART_PRIMARY = '#2563EB';
+
+const tooltipStyle: React.CSSProperties = {
+  borderRadius: 8,
+  border: '1px solid #E2E8F0',
+  boxShadow: '0px 4px 12px rgba(0,0,0,0.08), 0px 1px 3px rgba(0,0,0,0.06)',
+  fontSize: 13,
+  fontFamily: 'Source Sans 3, sans-serif',
+  padding: '10px 14px',
+};
+
 interface Props {
   data: TimeseriesPoint[];
 }
 
 export default function ClickChart({ data }: Props) {
   if (data.length === 0) {
-    return <p className="text-center text-gray-400 py-8 text-sm">No click data available</p>;
+    return <p style={{ textAlign: 'center', color: '#94A3B8', padding: '40px 0', fontSize: '0.875rem' }}>No click data available</p>;
   }
 
   const formatted = data.map((d) => ({
@@ -29,35 +41,28 @@ export default function ClickChart({ data }: Props) {
       <AreaChart data={formatted} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
         <defs>
           <linearGradient id="clickGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            <stop offset="5%" stopColor={CHART_PRIMARY} stopOpacity={0.12} />
+            <stop offset="95%" stopColor={CHART_PRIMARY} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 12, fill: '#94a3b8' }}
-          axisLine={{ stroke: '#e2e8f0' }}
+          tick={{ fontSize: 12, fill: '#94A3B8', fontFamily: 'Source Sans 3, sans-serif' }}
+          axisLine={{ stroke: '#E2E8F0' }}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 12, fill: '#94a3b8' }}
+          tick={{ fontSize: 12, fill: '#94A3B8', fontFamily: 'Source Sans 3, sans-serif' }}
           axisLine={false}
           tickLine={false}
           allowDecimals={false}
         />
-        <Tooltip
-          contentStyle={{
-            borderRadius: 8,
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-            fontSize: 13,
-          }}
-        />
+        <Tooltip contentStyle={tooltipStyle} />
         <Area
           type="monotone"
           dataKey="clicks"
-          stroke="#3b82f6"
+          stroke={CHART_PRIMARY}
           strokeWidth={2}
           fill="url(#clickGradient)"
         />
@@ -71,7 +76,6 @@ function formatTimestamp(ts: string): string {
     const date = parseISO(ts);
     return format(date, 'MMM d');
   } catch {
-    // If parsing fails, try treating it as just a date string
     return ts.slice(0, 10);
   }
 }

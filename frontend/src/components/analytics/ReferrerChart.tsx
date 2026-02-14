@@ -9,6 +9,19 @@ import {
 } from 'recharts';
 import type { ReferrerStats } from '../../types/api';
 
+/* ── Palette ── */
+const CHART_SECONDARY = '#F97316'; // accent orange for referrer bars
+
+const tooltipStyle: React.CSSProperties = {
+  borderRadius: 8,
+  border: '1px solid #E2E8F0',
+  boxShadow: '0px 4px 12px rgba(0,0,0,0.08), 0px 1px 3px rgba(0,0,0,0.06)',
+  fontSize: 13,
+  fontFamily: 'Source Sans 3, sans-serif',
+  maxWidth: 300,
+  padding: '10px 14px',
+};
+
 interface Props {
   data: ReferrerStats[];
 }
@@ -17,7 +30,7 @@ const DEFAULT_REFERRERS = ['Direct', 'Google', 'LinkedIn', 'Twitter / X', 'Reddi
 
 export default function ReferrerChart({ data }: Props) {
   if (data.length === 0) {
-    return <p className="text-center text-gray-400 py-8 text-sm">No referrer data</p>;
+    return <p style={{ textAlign: 'center', color: '#94A3B8', padding: '40px 0', fontSize: '0.875rem' }}>No referrer data</p>;
   }
 
   // Map API data to display names
@@ -44,13 +57,11 @@ export default function ReferrerChart({ data }: Props) {
     }
   }
 
-  // Build chart data with all default referrers (0 if no data)
   const formatted = DEFAULT_REFERRERS.map((name) => ({
     name,
     clicks: dataMap.get(name) || 0,
   }));
 
-  // Build "Others" tooltip detail
   const othersDetail = otherSources.length > 0
     ? otherSources.map((s) => `${s.name}: ${s.clicks}`).join(', ')
     : '';
@@ -58,24 +69,24 @@ export default function ReferrerChart({ data }: Props) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={formatted} layout="vertical" margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-        <XAxis type="number" tick={{ fontSize: 12, fill: '#94a3b8' }} axisLine={false} tickLine={false} allowDecimals={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
+        <XAxis
+          type="number"
+          tick={{ fontSize: 12, fill: '#94A3B8', fontFamily: 'Source Sans 3, sans-serif' }}
+          axisLine={false}
+          tickLine={false}
+          allowDecimals={false}
+        />
         <YAxis
           dataKey="name"
           type="category"
-          tick={{ fontSize: 12, fill: '#64748b' }}
+          tick={{ fontSize: 12, fill: '#475569', fontFamily: 'Source Sans 3, sans-serif' }}
           axisLine={false}
           tickLine={false}
           width={100}
         />
         <Tooltip
-          contentStyle={{
-            borderRadius: 8,
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
-            fontSize: 13,
-            maxWidth: 300,
-          }}
+          contentStyle={tooltipStyle}
           formatter={(value: number, _name: string, props: { payload?: { name: string } }) => {
             if (props.payload?.name === 'Others' && othersDetail) {
               return [`${value} clicks (${othersDetail})`, 'Clicks'];
@@ -83,7 +94,7 @@ export default function ReferrerChart({ data }: Props) {
             return [`${value} clicks`, 'Clicks'];
           }}
         />
-        <Bar dataKey="clicks" fill="#8b5cf6" radius={[0, 4, 4, 0]} barSize={20} />
+        <Bar dataKey="clicks" fill={CHART_SECONDARY} radius={[0, 4, 4, 0]} barSize={20} />
       </BarChart>
     </ResponsiveContainer>
   );
