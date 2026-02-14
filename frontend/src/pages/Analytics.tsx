@@ -106,22 +106,22 @@ export default function Analytics() {
             </div>
           </div>
 
-          {/* Timeseries chart */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Clicks Over Time</h2>
-            <ClickChart data={timeseries} />
-          </div>
-
-          {/* Two-column: Referrers + Devices */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Two-column: Timeseries + Referrers */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Clicks Over Time</h2>
+              <ClickChart data={timeseries} />
+            </div>
             <div className="bg-white rounded-xl border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Top Referrers</h2>
               <ReferrerChart data={referrers} />
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Device Breakdown</h2>
-              <DeviceCharts data={devices} />
-            </div>
+          </div>
+
+          {/* Device Breakdown — full width, horizontal layout */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Device Breakdown</h2>
+            <DeviceCharts data={devices} />
           </div>
 
           {/* Geo */}

@@ -13,12 +13,9 @@ export default function DeviceCharts({ data }: Props) {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Device types */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <ChartSection title="Device Types" items={data.deviceTypes} />
-      {/* Browsers */}
       <ChartSection title="Browsers" items={data.browsers} />
-      {/* OS */}
       <ChartSection title="Operating Systems" items={data.operatingSystems} />
     </div>
   );
