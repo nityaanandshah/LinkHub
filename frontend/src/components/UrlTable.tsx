@@ -54,7 +54,6 @@ export default function UrlTable({ urls, onDelete, onToggle, onRefresh, onViewAn
           <tr className="border-b border-gray-200">
             <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Short URL</th>
             <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Destination</th>
-            <th className="text-center py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Clicks</th>
             <th className="text-center py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
             <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
             <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
@@ -87,14 +86,6 @@ export default function UrlTable({ urls, onDelete, onToggle, onRefresh, onViewAn
                 >
                   {url.longUrl}
                 </a>
-              </td>
-              <td className="py-3 px-4 text-center">
-                <button
-                  onClick={() => onViewAnalytics(url.shortCode)}
-                  className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
-                >
-                  {url.clickCount.toLocaleString()}
-                </button>
               </td>
               <td className="py-3 px-4 text-center">
                 <span

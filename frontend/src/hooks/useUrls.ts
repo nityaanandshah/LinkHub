@@ -9,7 +9,7 @@ export function useUrls() {
   const [totalElements, setTotalElements] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const fetchUrls = useCallback(async (page = 0, size = 20) => {
+  const fetchUrls = useCallback(async (page = 0, size = 10) => {
     setLoading(true);
     try {
       const response = await apiClient.get<PageResponse<UrlItem>>('/urls', {
