@@ -111,7 +111,7 @@ public class UrlService {
     // ────────── READ ──────────
 
     public Page<UrlResponse> listUserUrls(Long userId, int page, int size) {
-        Page<Url> urls = urlRepository.findByUserIdAndIsActiveTrue(
+        Page<Url> urls = urlRepository.findByUserId(
                 userId,
                 PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"))
         );

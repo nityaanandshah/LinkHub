@@ -20,6 +20,8 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
 
     Page<Url> findByUserIdAndIsActiveTrue(Long userId, Pageable pageable);
 
+    Page<Url> findByUserId(Long userId, Pageable pageable);
+
     boolean existsByShortCode(String shortCode);
 
     /**
