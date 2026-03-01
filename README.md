@@ -88,40 +88,6 @@ A full-stack, production-ready URL shortener built with **Java Spring Boot**, **
 
 ---
 
-## Project Structure
-
-```
-LinkHub/
-├── backend/                    # Spring Boot API (port 8080)
-│   └── src/main/java/com/linkhub/
-│       ├── auth/               # JWT, OAuth2, user management
-│       ├── url/                # URL CRUD, redirect, QR codes, cache
-│       ├── analytics/          # Analytics API, Kafka producer
-│       ├── keygen/             # Short-code generation pool
-│       ├── ratelimit/          # Redis rate limiter
-│       ├── config/             # Security, Kafka, Redis, CORS, Swagger
-│       └── common/             # Exception handler, utilities
-├── analytics-consumer/         # Kafka consumer (port 8081)
-│   └── src/main/java/com/linkhub/analytics/
-│       ├── consumer/           # Click event listener, batch processing
-│       ├── service/            # GeoIP, User-Agent parsing
-│       └── model/              # Click event entities
-├── frontend/                   # React SPA (port 5173 dev / 3000 Docker)
-│   └── src/
-│       ├── pages/              # Login, Dashboard, Analytics
-│       ├── components/         # URL table, modals, charts
-│       ├── hooks/              # useAuth, useUrls, useAnalytics
-│       └── api/                # Axios client with JWT interceptor
-├── k8s/                        # Kubernetes manifests
-├── monitoring/                 # Prometheus + Grafana config
-├── loadtest/                   # k6 performance tests
-├── .github/workflows/          # CI pipeline
-├── docker-compose.yml          # Local development
-└── docker-compose.prod.yml     # Production deployment
-```
-
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -261,16 +227,6 @@ Uses **Testcontainers** (PostgreSQL, Redis, Kafka) for realistic integration tes
 - **AnalyticsIntegrationTest** — click events, analytics API
 - **RateLimitIntegrationTest** — rate limiting enforcement
 - **ResilienceIntegrationTest** — circuit breaker behavior
-
-### Load Testing
-
-```bash
-# Install k6: brew install k6
-cd loadtest
-k6 run redirect-load-test.js
-```
-
-Validates sub-50ms p95 redirect latency under load (up to 100 VUs with spike testing).
 
 ---
 

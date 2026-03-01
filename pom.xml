@@ -32,5 +32,6 @@
         <ua-parser.version>1.6.1</ua-parser.version>
         <maxmind.version>4.2.0</maxmind.version>
         <resilience4j.version>2.2.0</resilience4j.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
     </properties>
 </project>
