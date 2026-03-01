@@ -1,6 +1,6 @@
 # LinkHub — Production-Grade URL Shortener
 
-A full-stack, production-ready URL shortener built with **Java Spring Boot**, **React**, **PostgreSQL**, **Redis**, **Kafka**, and **Kubernetes**. Designed to demonstrate FAANG-level system design with sub-50ms redirect latency, real-time analytics, fault tolerance, and horizontal scalability.
+A full-stack, production-ready URL shortener built with **Java Spring Boot**, **React**, **PostgreSQL**, **Redis**, **Kafka**, and **Kubernetes**. Designed to demonstrate system design with sub-50ms redirect latency, real-time analytics, fault tolerance, and horizontal scalability.
 
 ---
 
