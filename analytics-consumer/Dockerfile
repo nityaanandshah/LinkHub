@@ -3,9 +3,10 @@ FROM maven:3.9-eclipse-temurin-17-alpine AS build
 
 WORKDIR /app
 
-# Copy parent POM first for dependency caching
+# Copy parent POM and all module POMs for dependency caching
 COPY pom.xml ./pom.xml
 COPY analytics-consumer/pom.xml ./analytics-consumer/pom.xml
+COPY backend/pom.xml ./backend/pom.xml
 
 # Download dependencies (cached layer)
 RUN mvn dependency:go-offline -pl analytics-consumer -am -B
